@@ -1,4 +1,3 @@
-/** @format */
 
 const db = require('../db/db'); // Import the database connection
 
