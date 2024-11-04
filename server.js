@@ -7,6 +7,10 @@ const NewsEvent = require('./models/newsEvent.model'); // Import the NewsEvent m
 const userGroupRoutes = require('./routes/usersGroups.route'); // Existing routes
 const newsEventRoutes = require('./routes/newsEvents.route'); // New route for news events
 const familyEventRoutes = require('./routes/familyEvents.route'); // Family Event route
+const childcareJourneyRoutes = require('./routes/childcareJourney.route');
+const practiceRoutes = require('./routes/practice.route');
+const federalProvincialRoutes = require('./routes/federalProvincial.route');
+const covid19Routes = require('./routes/covid19.route');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +32,10 @@ sequelize.sync({ alter: true })
 app.use('/user-groups', userGroupRoutes); // Existing route using MySQL connection
 app.use('/news-events', newsEventRoutes); // New route using Sequelize
 app.use('/family-events', familyEventRoutes);
+app.use('/childcare-journey', childcareJourneyRoutes);
+app.use('/practice', practiceRoutes);
+app.use('/federal-provincial', federalProvincialRoutes);
+app.use('/covid19', covid19Routes);
 
 // Start the server
 app.listen(PORT, () => {
