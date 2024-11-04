@@ -2,7 +2,6 @@
 
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index');
-const Covid19 = require('./covid19.model');
 
 const Blog = sequelize.define(
 	'Blog',
@@ -35,7 +34,7 @@ const Blog = sequelize.define(
 		},
 	},
 	{
-		tableName: 'childcare_journey',
+		tableName: 'blog',
 		timestamps: true,
 	}
 );
