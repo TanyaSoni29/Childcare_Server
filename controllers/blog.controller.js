@@ -1,5 +1,3 @@
-/** @format */
-
 const Blog = require('../models/blog.model');
 
 const createBlog = async (req, res) => {
