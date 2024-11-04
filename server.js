@@ -6,6 +6,7 @@ const db = require('./db/db'); // Existing MySQL connection
 const NewsEvent = require('./models/newsEvent.model'); // Import the NewsEvent model
 const userGroupRoutes = require('./routes/usersGroups.route'); // Existing routes
 const newsEventRoutes = require('./routes/newsEvents.route'); // New route for news events
+const familyEventRoutes = require('./routes/familyEvents.route'); // Family Event route
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ sequelize.sync({ alter: true })
 // Register routes
 app.use('/user-groups', userGroupRoutes); // Existing route using MySQL connection
 app.use('/news-events', newsEventRoutes); // New route using Sequelize
+app.use('/family-events', familyEventRoutes);
 
 // Start the server
 app.listen(PORT, () => {
