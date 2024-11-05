@@ -1,3 +1,5 @@
+/** @format */
+
 // Load environment variables from .env
 require('dotenv').config();
 const express = require('express');
@@ -14,24 +16,26 @@ const blogRoutes = require('./routes/blog.route'); // Blog routes
 const authRoutes = require('./routes/auth.route'); // Auth routes for login
 
 // Import authentication middleware
-const { authenticateToken, authorizeRoles } = require('./middleware/auth.middleware');
+const {
+	authenticateToken,
+	authorizeRoles,
+} = require('./middleware/auth.middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Enable CORS for requests from the frontend
-app.use(cors({
-  origin: 'http://localhost:5173', // Allow requests from this origin
-  credentials: true,               // Allow credentials to be included if necessary
-}));
+app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
 // Test the MySQL connection (for non-Sequelize routes)
 db.getConnection()
-    .then(() => console.log('Connected to the MySQL database successfully!'))
-    .catch((err) => console.error('Failed to connect to the MySQL database:', err));
+	.then(() => console.log('Connected to the MySQL database successfully!'))
+	.catch((err) =>
+		console.error('Failed to connect to the MySQL database:', err)
+	);
 
 // Sync Sequelize models (creates tables if they don't exist)
 sequelize
@@ -43,20 +47,35 @@ sequelize
 app.use('/auth', authRoutes); // Login route for authentication
 
 // Protected routes
-app.use('/user-groups', authenticateToken, authorizeRoles(['Admin']), userGroupRoutes); // Only accessible by Admin
+app.use(
+	'/user-groups',
+	authenticateToken,
+	authorizeRoles(['Admin']),
+	userGroupRoutes
+); // Only accessible by Admin
 
 // Example protected routes with role-based access
 app.get('/admin', authenticateToken, authorizeRoles(['Admin']), (req, res) => {
 	res.json({ message: 'Welcome, Admin!' });
 });
 
-app.get('/coach', authenticateToken, authorizeRoles(['Admin', 'Coach']), (req, res) => {
-	res.json({ message: 'Welcome, Coach!' });
-});
+app.get(
+	'/coach',
+	authenticateToken,
+	authorizeRoles(['Admin', 'Coach']),
+	(req, res) => {
+		res.json({ message: 'Welcome, Coach!' });
+	}
+);
 
-app.get('/member', authenticateToken, authorizeRoles(['Admin', 'Coach', 'Member']), (req, res) => {
-	res.json({ message: 'Welcome, Member!' });
-});
+app.get(
+	'/member',
+	authenticateToken,
+	authorizeRoles(['Admin', 'Coach', 'Member']),
+	(req, res) => {
+		res.json({ message: 'Welcome, Member!' });
+	}
+);
 
 // Register additional routes (unprotected or protected separately if needed)
 app.use('/news-events', newsEventRoutes); // Example of Sequelize-based route
