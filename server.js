@@ -1,4 +1,3 @@
-/** @format */
 
 // Load environment variables from .env
 require('dotenv').config();
