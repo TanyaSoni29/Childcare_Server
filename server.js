@@ -1,6 +1,7 @@
 // Load environment variables from .env
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors'); // Import cors
 const mysql = require('mysql2/promise'); // MySQL for database connection
 const sequelize = require('./models/index'); // Sequelize instance for ORM
 const db = require('./db/db'); // Existing MySQL connection using db.js
@@ -18,6 +19,12 @@ const { authenticateToken, authorizeRoles } = require('./middleware/auth.middlew
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Enable CORS for requests from the frontend
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow requests from this origin
+  credentials: true,               // Allow credentials to be included if necessary
+}));
+
 // Middleware to parse JSON bodies
 app.use(express.json());
 
@@ -25,7 +32,6 @@ app.use(express.json());
 db.getConnection()
     .then(() => console.log('Connected to the MySQL database successfully!'))
     .catch((err) => console.error('Failed to connect to the MySQL database:', err));
-
 
 // Sync Sequelize models (creates tables if they don't exist)
 sequelize
