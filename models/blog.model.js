@@ -22,16 +22,6 @@ const Blog = sequelize.define(
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
-		type: {
-			type: DataTypes.ENUM(
-				'childcare',
-				'practice',
-				'covid19',
-				'family',
-				'federal'
-			),
-			defaultValue: 'family',
-		},
 	},
 	{
 		tableName: 'blog',
