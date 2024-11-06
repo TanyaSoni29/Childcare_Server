@@ -10,13 +10,14 @@ const authenticateToken = (req, res, next) => {
 
 	// Verify the token using the secret key
 	jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-		// If token verification fails, return a 403 (Forbidden) response
-		if (err) return res.status(403).json({ message: 'Invalid token' });
+    if (err) {
+        console.log("JWT Error:", err); // Log the error details
+        return res.status(403).json({ message: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+});
 
-		// If token is valid, attach the decoded user info to the request object
-		req.user = user;
-		next(); // Proceed to the next middleware or route handler
-	});
 };
 
 // Middleware function for role-based access control

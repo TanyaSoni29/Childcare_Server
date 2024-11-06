@@ -12,6 +12,8 @@ const userGroupRoutes = require('./routes/usersGroups.route'); // Routes for use
 const newsEventRoutes = require('./routes/newsEvents.route'); // Routes for news events
 const blogRoutes = require('./routes/blog.route'); // Routes for blog management
 const authRoutes = require('./routes/auth.route'); // Routes for authentication (login)
+const userRoutes = require('./routes/user.route');
+
 
 // Import authentication and authorization middleware
 const {
@@ -23,8 +25,12 @@ const app = express(); // Initialize the Express app
 const PORT = process.env.PORT || 3000; // Set the port from environment variable or default to 3000
 
 // Enable CORS for handling requests from different origins (e.g., frontend)
-app.use(cors());
-
+// app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
 // Middleware to parse JSON bodies from incoming requests
 app.use(express.json());
 
@@ -45,6 +51,8 @@ sequelize
 
 // Public route for authentication (e.g., login)
 app.use('/auth', authRoutes); // Login route for user authentication
+
+app.use('/users', userRoutes); // Routes for managing users
 
 // Protected routes requiring token and role-based access control
 
@@ -85,6 +93,8 @@ app.get(
 
 app.use('/news-events', newsEventRoutes); // Routes for managing news events (e.g., using Sequelize model)
 app.use('/blog', blogRoutes); // Routes for managing blog entries
+
+
 
 // Start the Express server
 app.listen(PORT, () => {
