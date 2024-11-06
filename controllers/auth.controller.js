@@ -1,6 +1,10 @@
+/** @format */
+
 const bcrypt = require('bcrypt'); // Import bcrypt for password hashing
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken for generating JWT tokens
-const db = require('../db/db'); // Import the database connection
+const db = require('../db/db');
+const User = require('../models/user.model');
+const { Op } = require('sequelize'); // Import the database connection
 require('dotenv').config(); // Load environment variables from .env file
 
 // Login function to authenticate a user
@@ -52,4 +56,53 @@ const login = async (req, res) => {
 	}
 };
 
-module.exports = { login }; // Export the login function for use in routes or other parts of the application
+const register = async (req, res) => {
+	const { username, email, password, confirmPassword } = req.body;
+	console.log('Received registration request:', username, email);
+
+	try {
+		// Validate password and confirmPassword
+		if (password !== confirmPassword) {
+			return res.status(400).json({ message: 'Passwords do not match' });
+		}
+
+		// Check if the username or email already exists
+		const existingUser = await User.findOne({
+			where: {
+				[Op.or]: [{ username: username }, { email: email }],
+			},
+		});
+
+		if (existingUser) {
+			return res
+				.status(400)
+				.json({ message: 'Username or email already exists' });
+		}
+
+		// Hash the password
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		// Create a new user in the database using Sequelize
+		const newUser = await User.create({
+			username,
+			email,
+			password: hashedPassword,
+			category_id: 4, // Set category_id to 4 by default
+		});
+
+		// Generate a JWT token for the new user
+		const token = jwt.sign(
+			{ id: newUser.id, role: 'User' },
+			process.env.JWT_SECRET,
+			{ expiresIn: '1h' }
+		);
+
+		console.log('User registered successfully:', newUser.id);
+		res.status(201).json({ message: 'User registered successfully', token });
+	} catch (err) {
+		console.error('Error registering user:', err);
+		res.status(500).json({ message: 'Server error' });
+	}
+};
+
+module.exports = { login, register };
