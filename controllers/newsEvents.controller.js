@@ -50,7 +50,7 @@ const updateNewsEvent = async (req, res) => {
         await newsEvent.update({ post_title, content, cover_img, description });
         res.json({ message: 'News event updated successfully' });
     } catch (err) {
-        console.error('Error updating news event:', err);
+        console.error('Error in updating news event:', err);
         res.status(500).send('Server error');
     }
 };
@@ -66,7 +66,7 @@ const deleteNewsEvent = async (req, res) => {
         await newsEvent.destroy();
         res.json({ message: 'News event deleted successfully' });
     } catch (err) {
-        console.error('Error deleting news event:', err);
+        console.error('Error in deleting news event:', err);
         res.status(500).send('Server error');
     }
 };
