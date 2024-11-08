@@ -3,7 +3,7 @@
 // models/actionPlan.model.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index'); // Adjust path if needed
-
+const User = require('../models/user.model');
 const ActionPlan = sequelize.define(
 	'ActionPlan',
 	{
@@ -50,7 +50,9 @@ const ActionPlan = sequelize.define(
 	}
 );
 
-User.hasMany(ActionPlan, { foreignKey: 'user_id' });
-ActionPlan.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(ActionPlan, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(ActionPlan, { foreignKey: 'coach_id', as: 'coach' });
+ActionPlan.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+ActionPlan.belongsTo(User, { foreignKey: 'coach_id', as: 'coach' });
 
 module.exports = ActionPlan;

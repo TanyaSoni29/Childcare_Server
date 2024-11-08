@@ -8,6 +8,7 @@ const mysql = require('mysql2/promise'); // Import MySQL2 with promise support
 const sequelize = require('./models/index'); // Import Sequelize instance for ORM
 const db = require('./db/db'); // Import MySQL connection using db.js
 const path = require('path'); // For handling file paths
+const fileUpload = require('express-fileupload'); // Middleware for handling file uploads
 
 // Import models and route handlers
 const NewsEvent = require('./models/newsEvent.model'); // Sequelize model for NewsEvent
@@ -16,8 +17,7 @@ const newsEventRoutes = require('./routes/newsEvents.route'); // Routes for news
 const blogRoutes = require('./routes/blog.route'); // Routes for blog management
 const authRoutes = require('./routes/auth.route'); // Routes for authentication (login)
 const userRoutes = require('./routes/user.route'); // Routes for managing users
-const fileUpload = require('express-fileupload'); // Middleware for handling file uploads
-
+const actionPlanRoutes = require('./routes/actionPlans.route');
 // Import authentication and authorization middleware
 const {
 	authenticateToken,
@@ -48,7 +48,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Test the MySQL connection (for non-Sequelize routes)
 db.getConnection()
 	.then(() => console.log('Connected to the MySQL database successfully!')) // Log success message if connected
-	.catch((err) => console.error('Failed to connect to the MySQL database:', err)); // Log error if connection fails
+	.catch((err) =>
+		console.error('Failed to connect to the MySQL database:', err)
+	); // Log error if connection fails
 
 // Sync Sequelize models with the database
 sequelize
@@ -103,7 +105,9 @@ app.get(
 app.use('/news-events', newsEventRoutes); // Routes for handling CRUD operations on news events
 
 // Route for managing blog entries
-app.use('/blog', blogRoutes); // Routes for managing blog entries
+app.use('/blog', blogRoutes);
+
+app.use('/action-plans', actionPlanRoutes); // Routes for managing blog entries
 
 // Start the Express server
 app.listen(PORT, () => {
