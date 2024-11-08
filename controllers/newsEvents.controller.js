@@ -1,6 +1,5 @@
 /** @format */
 const path = require('path');
-const fs = require('fs');
 const NewsEvent = require('../models/newsEvent.model');
 
 // Create a new news event
@@ -23,39 +22,30 @@ const NewsEvent = require('../models/newsEvent.model');
 
 const createNewsEvent = async (req, res) => {
     const { post_title, content, description } = req.body;
-    let coverImgPath = null;
-
-    // Check if a file was uploaded
-    if (req.files && req.files.cover_img) {
-        const coverImage = req.files.cover_img;
-        const uploadDir = path.join(__dirname, '../uploads'); // Specify the upload directory
-
-        // Create the upload directory if it doesn't exist
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        // Generate a unique filename to avoid overwriting
-        const uniqueFileName = `${Date.now()}_${coverImage.name}`;
-        coverImgPath = path.join('/uploads', uniqueFileName);
-
-        // Move the file to the upload directory
-        coverImage.mv(path.join(uploadDir, uniqueFileName), (err) => {
-            if (err) {
-                console.error('File upload error:', err);
-                return res.status(500).send('Error uploading file');
-            }
-        });
-    }
+    let cover_img = null;
 
     try {
-        // Save the new news event with the image path
+        // Check if a file was uploaded
+        if (req.files && req.files.cover_img) {
+            const coverImgFile = req.files.cover_img;
+            const uploadDir = path.join(__dirname, '../uploads'); // Ensure this folder exists
+            const uploadPath = path.join(uploadDir, coverImgFile.name);
+
+            // Move the file to the uploads folder
+            await coverImgFile.mv(uploadPath);
+
+            // Save the file path or URL to the database
+            cover_img = `/uploads/${coverImgFile.name}`;
+        }
+
+        // Create a new record in the database
         const newsEvent = await NewsEvent.create({
             post_title,
             content,
+            cover_img,
             description,
-            cover_img: coverImgPath, // Store the relative path to the image
         });
+
         res.status(201).json(newsEvent);
     } catch (err) {
         console.error('Error creating news event:', err);
