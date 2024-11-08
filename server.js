@@ -1,3 +1,5 @@
+/** @format */
+
 // Load environment variables from the .env file
 require('dotenv').config();
 const express = require('express'); // Import Express for creating the server
@@ -5,6 +7,7 @@ const cors = require('cors'); // Import CORS for handling cross-origin requests
 const mysql = require('mysql2/promise'); // Import MySQL2 with promise support
 const sequelize = require('./models/index'); // Import Sequelize instance for ORM
 const db = require('./db/db'); // Import MySQL connection using db.js
+const path = require('path'); // For handling file paths
 
 // Import models and route handlers
 const NewsEvent = require('./models/newsEvent.model'); // Sequelize model for NewsEvent
@@ -12,34 +15,40 @@ const userGroupRoutes = require('./routes/usersGroups.route'); // Routes for use
 const newsEventRoutes = require('./routes/newsEvents.route'); // Routes for news events
 const blogRoutes = require('./routes/blog.route'); // Routes for blog management
 const authRoutes = require('./routes/auth.route'); // Routes for authentication (login)
-const userRoutes = require('./routes/user.route');
-
+const userRoutes = require('./routes/user.route'); // Routes for managing users
+const fileUpload = require('express-fileupload'); // Middleware for handling file uploads
 
 // Import authentication and authorization middleware
 const {
 	authenticateToken,
 	authorizeRoles,
-} = require('./middleware/auth.middleware');
+} = require('./middleware/auth.middleware'); // Custom middleware for authentication and role-based authorization
 
 const app = express(); // Initialize the Express app
 const PORT = process.env.PORT || 3000; // Set the port from environment variable or default to 3000
 
-// Enable CORS for handling requests from different origins (e.g., frontend)
-// app.use(cors());
-app.use(cors({
-    origin: '*', // Allow all origins
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-}));
+// Enable CORS to handle requests from different origins (e.g., frontend)
+app.use(
+	cors({
+		origin: '*', // Allow all origins
+		methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+		allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+	})
+);
+
+// Enable file upload with express-fileupload middleware
+app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' })); // Temporary directory for storing files
+
 // Middleware to parse JSON bodies from incoming requests
 app.use(express.json());
+
+// Serve static files (like images) from the 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Test the MySQL connection (for non-Sequelize routes)
 db.getConnection()
 	.then(() => console.log('Connected to the MySQL database successfully!')) // Log success message if connected
-	.catch((err) =>
-		console.error('Failed to connect to the MySQL database:', err) // Log error if connection fails
-	);
+	.catch((err) => console.error('Failed to connect to the MySQL database:', err)); // Log error if connection fails
 
 // Sync Sequelize models with the database
 sequelize
@@ -47,11 +56,10 @@ sequelize
 	.then(() => console.log('Database synchronized successfully!')) // Log success if sync is successful
 	.catch((err) => console.error('Failed to sync database:', err)); // Log error if sync fails
 
-// Register routes
-
 // Public route for authentication (e.g., login)
 app.use('/auth', authRoutes); // Login route for user authentication
 
+// Route for managing users
 app.use('/users', userRoutes); // Routes for managing users
 
 // Protected routes requiring token and role-based access control
@@ -91,10 +99,11 @@ app.get(
 
 // Register additional routes (not necessarily protected)
 
-app.use('/news-events', newsEventRoutes); // Routes for managing news events (e.g., using Sequelize model)
+// Route for managing news events, using Sequelize model
+app.use('/news-events', newsEventRoutes); // Routes for handling CRUD operations on news events
+
+// Route for managing blog entries
 app.use('/blog', blogRoutes); // Routes for managing blog entries
-
-
 
 // Start the Express server
 app.listen(PORT, () => {
