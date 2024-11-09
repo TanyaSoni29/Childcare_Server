@@ -1,5 +1,3 @@
-/** @format */
-
 // Load environment variables from the .env file
 require('dotenv').config();
 const express = require('express'); // Import Express for creating the server
@@ -9,6 +7,7 @@ const sequelize = require('./models/index'); // Import Sequelize instance for OR
 const db = require('./db/db'); // Import MySQL connection using db.js
 const path = require('path'); // For handling file paths
 const fileUpload = require('express-fileupload'); // Middleware for handling file uploads
+const formRoutes = require('./routes/formRoutes'); // Import the form submission route
 
 // Import models and route handlers
 const NewsEvent = require('./models/newsEvent.model'); // Sequelize model for NewsEvent
@@ -17,7 +16,8 @@ const newsEventRoutes = require('./routes/newsEvents.route'); // Routes for news
 const blogRoutes = require('./routes/blog.route'); // Routes for blog management
 const authRoutes = require('./routes/auth.route'); // Routes for authentication (login)
 const userRoutes = require('./routes/user.route'); // Routes for managing users
-const actionPlanRoutes = require('./routes/actionPlans.route');
+const actionPlanRoutes = require('./routes/actionPlans.route'); // Routes for action plans
+
 // Import authentication and authorization middleware
 const {
 	authenticateToken,
@@ -47,22 +47,25 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Test the MySQL connection (for non-Sequelize routes)
 db.getConnection()
-	.then(() => console.log('Connected to the MySQL database successfully!')) // Log success message if connected
+	.then(() => console.log('Connected to the MySQL database successfully!'))
 	.catch((err) =>
 		console.error('Failed to connect to the MySQL database:', err)
-	); // Log error if connection fails
+	);
 
 // Sync Sequelize models with the database
 sequelize
-	.sync({ alter: true }) // `alter: true` makes changes to match the model schema
-	.then(() => console.log('Database synchronized successfully!')) // Log success if sync is successful
-	.catch((err) => console.error('Failed to sync database:', err)); // Log error if sync fails
+	.sync({ alter: true })
+	.then(() => console.log('Database synchronized successfully!'))
+	.catch((err) => console.error('Failed to sync database:', err));
 
 // Public route for authentication (e.g., login)
 app.use('/auth', authRoutes); // Login route for user authentication
 
 // Route for managing users
 app.use('/users', userRoutes); // Routes for managing users
+
+// Form submission route
+app.use('/contactapi', formRoutes); // Add the form route for handling contact form submissions
 
 // Protected routes requiring token and role-based access control
 
@@ -76,7 +79,7 @@ app.use(
 
 // Example protected route only accessible by Admin role
 app.get('/admin', authenticateToken, authorizeRoles(['Admin']), (req, res) => {
-	res.json({ message: 'Welcome, Admin!' }); // Respond with a welcome message for Admins
+	res.json({ message: 'Welcome, Admin!' });
 });
 
 // Example protected route accessible by Admin and Coach roles
@@ -85,7 +88,7 @@ app.get(
 	authenticateToken,
 	authorizeRoles(['Admin', 'Coach']),
 	(req, res) => {
-		res.json({ message: 'Welcome, Coach!' }); // Respond with a welcome message for Admins and Coaches
+		res.json({ message: 'Welcome, Coach!' });
 	}
 );
 
@@ -95,7 +98,7 @@ app.get(
 	authenticateToken,
 	authorizeRoles(['Admin', 'Coach', 'Member']),
 	(req, res) => {
-		res.json({ message: 'Welcome, Member!' }); // Respond with a welcome message for Admins, Coaches, and Members
+		res.json({ message: 'Welcome, Member!' });
 	}
 );
 
@@ -107,9 +110,9 @@ app.use('/news-events', newsEventRoutes); // Routes for handling CRUD operations
 // Route for managing blog entries
 app.use('/blog', blogRoutes);
 
-app.use('/action-plans', actionPlanRoutes); // Routes for managing blog entries
+app.use('/action-plans', actionPlanRoutes); // Routes for managing action plans
 
 // Start the Express server
 app.listen(PORT, () => {
-	console.log(`Server is running on http://localhost:${PORT}`); // Log the URL where the server is running
+	console.log(`Server is running on http://localhost:${PORT}`);
 });
