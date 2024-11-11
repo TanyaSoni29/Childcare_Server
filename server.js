@@ -7,7 +7,6 @@ const sequelize = require('./models/index'); // Import Sequelize instance for OR
 const db = require('./db/db'); // Import MySQL connection using db.js
 const path = require('path'); // For handling file paths
 const fileUpload = require('express-fileupload'); // Middleware for handling file uploads
-const formRoutes = require('./routes/formRoutes'); // Import the form submission route
 
 // Import models and route handlers
 const NewsEvent = require('./models/newsEvent.model'); // Sequelize model for NewsEvent
@@ -17,6 +16,7 @@ const blogRoutes = require('./routes/blog.route'); // Routes for blog management
 const authRoutes = require('./routes/auth.route'); // Routes for authentication (login)
 const userRoutes = require('./routes/user.route'); // Routes for managing users
 const actionPlanRoutes = require('./routes/actionPlans.route'); // Routes for action plans
+const formRoutes = require('./routes/formRoutes'); // Route for form submissions
 
 // Import authentication and authorization middleware
 const {
@@ -108,8 +108,9 @@ app.get(
 app.use('/news-events', newsEventRoutes); // Routes for handling CRUD operations on news events
 
 // Route for managing blog entries
-app.use('/blog', blogRoutes);
+app.use('/blog', blogRoutes); // Routes for handling CRUD operations on blog entries
 
+// Route for managing action plans
 app.use('/action-plans', actionPlanRoutes); // Routes for managing action plans
 
 // Start the Express server
