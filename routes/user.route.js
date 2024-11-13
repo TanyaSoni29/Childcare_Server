@@ -23,7 +23,7 @@ const router = express.Router();
 // Define routes for CRUD operations
 
 // Route to create a new user
-router.post('/', userController.createUser);
+router.post('/create', userController.createUser);
 
 // Route to get all users
 router.get('/', userController.getUsers);
