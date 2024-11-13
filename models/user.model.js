@@ -1,5 +1,3 @@
-/** @format */
-
 // models/user.model.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index'); // Adjust path if needed
