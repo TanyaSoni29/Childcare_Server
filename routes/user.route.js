@@ -27,6 +27,7 @@ router.post('/', userController.createUser);
 
 // Route to get all users
 router.get('/', userController.getUsers);
+router.get('/coaches', userController.getCoaches);
 
 // Route to get a single user by ID
 router.get('/:id', userController.getUserById);
