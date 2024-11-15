@@ -1,20 +1,5 @@
 /** @format */
 
-// const express = require('express');
-// const { authenticateToken, authorizeRoles } = require('../middleware/auth.middleware');
-// const userController = require('../controllers/user.controller');
-
-// const router = express.Router();
-
-// // Define routes for CRUD operations
-// router.post('/', authenticateToken, authorizeRoles(['Admin']), userController.createUser);
-// router.get('/', authenticateToken, authorizeRoles(['Admin', 'Coach']), userController.getUsers);
-// router.get('/:id', authenticateToken, authorizeRoles(['Admin', 'Coach']), userController.getUserById);
-// router.put('/:id', authenticateToken, authorizeRoles(['Admin']), userController.updateUser);
-// router.delete('/:id', authenticateToken, authorizeRoles(['Admin']), userController.deleteUser);
-
-// module.exports = router;
-
 const express = require('express');
 const userController = require('../controllers/user.controller');
 
@@ -27,7 +12,12 @@ router.post('/create', userController.createUser);
 
 // Route to get all users
 router.get('/', userController.getUsers);
+
+// Route to get all coaches
 router.get('/coaches', userController.getCoaches);
+
+// Route to get all clients
+router.get('/clients', userController.getClients);
 
 // Route to get a single user by ID
 router.get('/:id', userController.getUserById);
