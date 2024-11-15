@@ -1,3 +1,5 @@
+/** @format */
+
 // Load environment variables from the .env file
 require('dotenv').config();
 const express = require('express'); // Import Express for creating the server
